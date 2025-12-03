@@ -4,12 +4,12 @@
 #include<string.h>
 #include"commands.h"
 #include"functions.h"
-#include"structure.h"
+
 
 //prototipos de funciones 
 int CharToInt(const char *str);
 
-int main(char argc, char *argv[]){
+int main(int argc, char *argv[]){
 
     // Ningun comando ingresado
     if (argc <= 1){
@@ -24,27 +24,20 @@ int main(char argc, char *argv[]){
     }
 
     // Comando start
-    else if (strcmp(argv[1], "start")==0 && argv[2]!=NULL){
-        
-        int nodes = CharToInt(argv[2]);
-        
-        pvv_start(nodes); //comando start <numero> 
-        
-        printf ("Grafo creado con %d nodos\n", CharToInt(argv[2]));
-    }
+    else if (strcmp(argv[1], "start") == 0 && argv[2] != NULL) {
 
-    // comando generate file
-    else if (strcmp(argv[1], "generate")==0){
-        
-        // Si el segundo argumento es nulo se le notifica al usuario terminar el comando
-        if (argv[2]==NULL){
-            printf ("Comando incompleto, escriba: ./pvv generate file para crear archivo ruta\n");
+        int nodes = CharToInt(argv[2]);
+        if (nodes < 1) {
+            printf("Numero de nodos invalido.\n");
             return 1;
         }
-        
-        else if (strcmp(argv[2], "file")==0){
-            generar_archivos(); //comando generate file
+
+        if (pvv_start(nodes) != 0) {
+            printf("Error al crear el grafo.\n");
+            return 1;
         }
+
+        printf("Grafo creado con %d nodos\n", nodes);
     }
 
     else if (strcmp(argv[1], "read")==0){
@@ -54,11 +47,13 @@ int main(char argc, char *argv[]){
         }
 
         // Codigo incompleto para leer archivos
+        pvv_read(argv[2]);
     }
 
     // Comandos invalidos o no reconocidos
     else {
         printf ("Comando no reconocido, escriba: ./pvv help para ver los comandos disponibles\n");
+        return 1;
     }
 
     return 0;
@@ -68,7 +63,7 @@ int main(char argc, char *argv[]){
 int CharToInt(const char *str){
     int valor = atoi(str);
     if (valor < 0){
-        valor = valor * -1; //en caso de ingresar positivo se transforma a positivo 
+        return -1; //valor invalido
     }
     return valor;
 }
